@@ -8,12 +8,9 @@ var wss = new WebSocketServer({ port: port });
 var pending = false;
 var running = false;
 
-debug('Open websocket server on port ' + port);
-
 wss.on('connection', function(ws) {
-  debug('Connection to websocket established.');
   ws.on('message', function(msg) {
-    debug('Message received: ' + msg);
+    debug(msg);
   });
 });
 
@@ -115,4 +112,6 @@ watch.watchTree(dir, {
   }
 
 });
+
+debug('Listening on port ' + port);
 
