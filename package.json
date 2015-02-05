@@ -1,0 +1,29 @@
+{
+  "name": "ffive",
+  "version": "0.0.1",
+  "description": "F5 trigger by File watches",
+  "main": "index.js",
+  "_scripts": {
+    "test": "node test/selenium/tests.js"
+  },
+  "repository": {
+
+    "type": "git",
+    "url": "git://github.com/gjn/ffive"
+  },
+  "author": {
+    "name": "Gilbert Jeiziner",
+    "email": "gjn@space.ch"
+  },
+  "readmeFileName": "README.md",
+  "dependencies": {
+    "watch": "^0.13.0",
+    "ws": "^0.7.1",
+    "debug": "^2.1.1"
+  },
+  "devDependencies": {
+    "tap": "^0.5.0"
+  },
+  "licence": "MIT"
+}
+
