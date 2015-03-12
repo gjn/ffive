@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         FFive common
 // @namespace    http://gjn.ch
-// @version      0.1
+// @version      0.2
 // @description  Releoad ffive triggered pages
 // @author       Gilbert Jeiziner
-// @match        http://mf-(geoadmin3|chsdi3).dev.bgdi.ch/ltjeg/*$
+// @match        http://*.dev.bgdi.ch/ltjeg/*$
 // @grant        none
 // ==/UserScript==
 
