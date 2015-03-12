@@ -5,7 +5,7 @@
     "directory": "../mf-geoadmin3/src/",
     "actiondir": "../",
     "exclude": "(src/TemplateCacheModule.js|src/index.html|src/mobile.html|style/app.css|src/print.css|src/embed.html|src/deps.js)$",
-    "strategy": "SIGINT",
+    "strategy": "SIGTERM",
     "actions": [{
       "pre": "ga3:source",
       "cmd": "make",
@@ -27,7 +27,7 @@
     "directory": "../mf-chsdi3/chsdi/",
     "actiondir": "../",
     "exclude": "(/static/|/tests/|.pyc$|.mo$)",
-    "strategy": "SIGINT",
+    "strategy": "SIGTERM",
     "actions": [{
       "pre": "ch3:source",
       "cmd": "./buildout/bin/buildout",

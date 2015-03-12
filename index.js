@@ -65,10 +65,15 @@ var createRunner = function(dir, actions, strategy) {
         cwd: dir
       });
 
-      cmd.on('close', function(code) {
+      cmd.on('close', function(code, signal) {
         cmd = undefined;
         if (code !== 0) {
-          broadcast(action.error);
+          if (code !== null) {
+            broadcast(action.error);
+          }
+          if (signal !== null) {
+            debug('Process aborted with ' + signal);
+          }
           endRun();
         } else {
           broadcast(action.post);
