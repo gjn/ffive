@@ -22,7 +22,7 @@ wss.on('close', function() {
 });
 
 var broadcast = function (data) {
-  debug('Broadcasting: ' + data);
+  debug('Broadcasting: ffive:' + data);
   wss.clients.forEach(function (client) {
     client.send('ffive:' + data);
   });

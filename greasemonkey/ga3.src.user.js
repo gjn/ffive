@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         FFive src reload
+// @name         FFive ga3 src reload
 // @namespace    http://gjn.ch
 // @version      0.1
 // @description  Releoad mf-geoadmin3 src page on changes
@@ -11,8 +11,9 @@
 (function() {
     window.ffive.socket.onmessage = function(evt) {
         switch (evt.data) {
-            case "ffive:source":
-               window.location.reload();
+            case "ffive:ga3:source":
+            case "ffive:ch3:done":
+                window.location.reload();
                 break;
             default:
                 console.log(evt.data);
