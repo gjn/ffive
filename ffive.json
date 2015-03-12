@@ -1,0 +1,38 @@
+{
+  "description": "Configuration for mf-geoadmin3 project",
+  "port": 9014,
+  "watchers": [{
+    "directory": "../mf-geoadmin3/src/",
+    "actiondir": "../",
+    "exclude": "(src/TemplateCacheModule.js|src/index.html|src/mobile.html|style/app.css|src/print.css|src/embed.html|src/deps.js)$",
+    "actions": [{
+      "pre": "ga3:source",
+      "cmd": "make",
+      "params": ["dev"],
+      "error": "ga3:deverror",
+      "post": "ga3:dev"
+    }, {
+      "cmd": "make",
+      "params": ["prod"],
+      "error": "ga3:proderror",
+      "post": "ga3:prod"
+    }, {
+      "cmd": "make",
+      "params": ["all"],
+      "error": "ga3:allerror",
+      "post": "ga3:all"
+    }]
+  }, {
+    "directory": "../mf-chsdi3/chsdi/",
+    "actiondir": "../",
+    "exclude": "(/static/|/tests/|.pyc$|.mo$)",
+    "actions": [{
+      "pre": "ch3:source",
+      "cmd": "./buildout/bin/buildout",
+      "params": ["-c", "buildout_ltjeg.cfg"],
+      "error": "ch3:buildouterror",
+      "post": "ch3:done"
+    }]
+  }]
+}
+

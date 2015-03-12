@@ -19,7 +19,8 @@
   "dependencies": {
     "watch": "^0.13.0",
     "ws": "^0.7.1",
-    "debug": "^2.1.1"
+    "debug": "^2.1.1",
+    "promise": "^6.1.0"
   },
   "devDependencies": {
     "tap": "^0.5.0"

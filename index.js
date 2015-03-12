@@ -1,10 +1,14 @@
-var debug = require('debug')('ffive');
+var dbg = require('debug');
 var watch = require('watch');
 var spawn = require('child_process').spawn;
 var WebSocketServer = require('ws').Server;
-var port = 9014;
-var wss = new WebSocketServer({ port: port });
 
+dbg.enable('ffive');
+var debug = dbg('ffive');
+
+var conf = require('./ffive.json');
+
+var wss = new WebSocketServer({ port: conf.port });
 var pending = false;
 var running = false;
 
@@ -21,7 +25,7 @@ wss.on('close', function() {
 var broadcast = function (data) {
   debug('Broadcasting: ' + data);
   wss.clients.forEach(function (client) {
-    client.send(data);
+    client.send('ffive:' + data);
   });
 };
 
@@ -33,85 +37,106 @@ var checkPendingRun = function() {
   }
 };
 
-var run = function() {
-  running = true;
-  broadcast('ffive:source');
+var createRunner = function(dir, actions) {
+  var running = false;
+  var pending = false;
+  //'current is always a codesmell. Promises might
+  //be better way to handle action flow, but
+  //for now, this will do
+  var current = 0;
 
-  debug('Launch: make dev');
-  var make = spawn('make', ['dev'], {
-    stdio: 'inherit',
-    cwd: '/home/ltjeg/mf-geoadmin3'
-  });
-
-  make.on('close', function(code) {
-    if (code !== 0) {
-      broadcast('ffive:deverror ' + code);
-      checkPendingRun();
-    } else {
-      broadcast('ffive:dev');
-
-      debug('Launch: make prod');
-      var prodmake = spawn('make', ['prod'], {
-        stdio: 'inherit',
-        cwd: '/home/ltjeg/mf-geoadmin3'
-      });
-
-      prodmake.on('close', function(code) {
-        if (code !== 0) {
-          broadcast('ffive:proderror ' + code);
-          checkPendingRun();
-        } else {
-          broadcast('ffive:prod');
-
-          debug('Launch: make all');
-          var allmake = spawn('make', ['all'], {
-            stdio: 'inherit',
-            cwd: '/home/ltjeg/mf-geoadmin3'
-          });
-
-          allmake.on('close', function(code) {
-            if (code !== 0) {
-              broadcast('ffive:allerror ' + code);
-            } else {
-              broadcast('ffive:all');
-            }
-            checkPendingRun();
-          });
-        }
-      });
-    }
-  });
-
-};
-
-var dir = '/home/ltjeg/mf-geoadmin3/src';
-
-debug('Start whatching files in ' + dir);
-
-watch.watchTree(dir, {
-  ignoreDotFiles: true,
-  ignoreUnreadableDirectory: true,
-  ignoreDirectoryPattern: /node_modules/,
-  filter: function(file)  {
-    if (file.match(/(src\/TemplateCacheModule\.js|src\/index\.html|src\/mobile\.html|style\/app\.css|src\/print\.css|src\/deps\.js)$/g)) {
-      return false;
-    }
-    return true;
-  },
-  interval: 1000
-}, function(file, statfile, prevstatfile) {
-  if ((typeof file) !== 'string') {
-    return;
+  var endRun = function() {
+    running = false;
+    setTimeout(function() {
+      if (pending) {
+        pending = false;
+        debug('Pending request detected. Relaunch!');
+        run();
+      }
+    }, 0);
   };
 
-  if (running) {
-    pending = true;
-  } else {
-    debug('File change detected for: ' + file);
-    run();
+  var next = function() {
+    if (!actions.length ||
+        current >= actions.length) {
+      current = 0;
+      endRun();
+      return;
+    }
+    action = actions[current];
+    if (action.pre) {
+      broadcast(action.pre);
+    }
+
+    debug('Launch action: ' + action.cmd + ' ' + action.params[0] + ' in ' + dir);
+    var cmd = spawn(action.cmd, action.params, {
+      stdio: 'inherit',
+      cwd: dir
+    });
+
+    cmd.on('close', function(code) {
+      if (code !== 0) {
+        broadcast(action.error);
+        endRun();
+      } else {
+        broadcast(action.post);
+        current += 1;
+        setTimeout(function() {
+          next();
+        }, 0);
+      }
+    });
+  };
+
+  var run = function() {
+    if (running) {
+      pending = true;
+      return;
+    }
+    running = true;
+    next();
   }
 
-});
+  return function() {
+    run();
+  }
+};
 
-debug('Listening on port ' + port);
+var addWatch = function(w) {
+  debug('Start whatching files in ' + w.directory);
+
+  var runner = createRunner(w.directory + w.actiondir, w.actions);
+  var exclude;
+  if (w.exclude &&
+      w.exclude.length) {
+    exclude = new RegExp(w.exclude);
+  }
+
+  watch.watchTree(w.directory, {
+    ignoreDotFiles: true,
+    ignoreUnreadableDirectory: true,
+    ignoreDirectoryPattern: /node_modules/,
+    filter: function(file)  {
+      if (exclude &&
+          exclude.test(file)) {
+        return false;
+      }
+      return true;
+    },
+    interval: 1000
+  }, function(file, statfile, prevstatfile) {
+    if ((typeof file) !== 'string') {
+      return;
+    };
+    debug('File change detected for: ' + file);
+    runner();
+  });
+
+}
+
+for (var i = 0; i < conf.watchers.length; i++) {
+  addWatch(conf.watchers[i]);
+}
+
+debug('Listening on port ' + conf.port);
 
