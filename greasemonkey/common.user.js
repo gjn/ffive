@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Releoad ffive triggered pages
 // @author       Gilbert Jeiziner
-// @match        http://mf-geoadmin3.dev.bgdi.ch/ltjeg/*$
+// @match        http://mf-(geoadmin3|chsdi3).dev.bgdi.ch/ltjeg/*$
 // @grant        none
 // ==/UserScript==
 
