@@ -11,7 +11,7 @@
 (function() {
     window.ffive.socket.onmessage = function(evt) {
         switch (evt.data) {
-            case "ffive:ga3:source":
+            case "ffive:ga3:dev":
             case "ffive:ch3:done":
                 window.location.reload();
                 break;
