@@ -1,6 +1,9 @@
 {
   "description": "Configuration for mf-geoadmin3 project",
   "port": 9014,
+  "ssl": true,
+  "ssl_key": "./keys/server.key",
+  "ssl_cert": "./keys/server.crt",
   "watchers": [{
     "directory": "../mf-geoadmin3/src/",
     "actiondir": "../",

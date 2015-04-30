@@ -1,3 +1,6 @@
+// https setup: http://stackoverflow.com/questions/21397809/create-a-self-signed-ssl-cert-for-localhost-for-use-with-express-node
+// and https://github.com/websockets/ws/blob/f429240aea5c2f49f77d29003681b5c352bbe263/examples/ssl.js
+var fs = require('fs');
 var dbg = require('debug');
 var debounce = require('debounce');
 var watch = require('watch');
@@ -9,9 +12,29 @@ var debug = dbg('ffive');
 
 var conf = require('./ffive.json');
 
-var wss = new WebSocketServer({ port: conf.port });
+var httpServ = (conf.ssl) ? require('https') : require('http');
+var app = null;
+
+var procRequest = function(req, res) {
+  debug('request recieved, doing nothing');
+};
+
+if (conf.ssl) {
+  app = httpServ.createServer({
+      key: fs.readFileSync(conf.ssl_key),
+      cert: fs.readFileSync(conf.ssl_cert)
+    }, procRequest);
+} else {
+  app = httpServ.createServer(procRequest);
+}
+
+var retval = app.listen(conf.port);
+debug('retval for listen: ' + retval);
+
+var wss = new WebSocketServer({ server:app });
 
 wss.on('connection', function(ws) {
+  debug('connection event');
   ws.on('message', function(msg) {
     debug(msg);
   });
@@ -138,5 +161,5 @@ for (var i = 0; i < conf.watchers.length; i++) {
   addWatch(conf.watchers[i]);
 }
 
-debug('Listening on port ' + conf.port);
+debug('Listening on port ' + conf.port + (conf.ssl ? ' [SSL]' : ''));
 
