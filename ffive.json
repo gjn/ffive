@@ -4,7 +4,7 @@
   "watchers": [{
     "directory": "../mf-geoadmin3/src/",
     "actiondir": "../",
-    "exclude": "(src/TemplateCacheModule.js|src/index.html|src/mobile.html|style/app.css|src/print.css|src/embed.html|src/deps.js)$",
+    "exclude": "(src/TemplateCacheModule.js|src/index.html|src/mobile.html|style/app.css|src/print.css|src/embed.html|src/deps.js|src/lib/angular.js|src/lib/angular.min.js|src/lib/angular-translate.js|src/lib/angular-translate.min.js|src/lib/angular-translate-loader-static-files.js|src/lib/angular-translate-loader-static-files.min.js)$",
     "strategy": "SIGTERM",
     "actions": [{
       "pre": "ga3:source",
