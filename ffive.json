@@ -17,6 +17,11 @@
       "post": "ga3:dev"
     }, {
       "cmd": "make",
+      "params": ["testdev"],
+      "error": "ga3:testdeverror",
+      "post": "ga3:testdev"
+    }, {
+      "cmd": "make",
       "params": ["prod"],
       "error": "ga3:proderror",
       "post": "ga3:prod"
